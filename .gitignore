@@ -50,3 +50,5 @@ crashlytics-build.properties
 fabric.properties
 .idea/
 data/
+.pyc
+.DS_Store
