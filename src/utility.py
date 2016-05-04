@@ -1,9 +1,9 @@
+import os
 from os import listdir
 from os.path import join
-
+import cPickle
 import numpy as np
 from PIL import Image
-import math
 from scipy.linalg import norm
 from scipy.ndimage.filters import gaussian_filter
 
@@ -120,15 +120,17 @@ def load_images(base_dir, resize_shape=64, mode="train"):
             with open(os.path.join(os.path.dirname(__file__), '../data', 'train',"Y.pkl"), 'wb+') as f:
                 cPickle.dump(Y, f)
 
+    if mode == "train":
+        Y = Y-1
+        Y = Y.tolist()
+        temp_Y = np.zeros(shape=[len(Y), 62])
+        temp_Y[list(range(len(Y))), Y] = 1
+        Y = temp_Y
+
     return np.array(X), Y
 
 
 if __name__ == "__main__":
-    import os
-    import cPickle
-
     train_dir = os.path.join(os.path.dirname(__file__), '../data', 'train')
     test_dir = os.path.join(os.path.dirname(__file__), '../data', 'test')
     X, Y = load_images(train_dir, mode="train")
-    print X.shape
-    print Y.shape

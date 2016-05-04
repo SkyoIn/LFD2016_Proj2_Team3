@@ -2,8 +2,9 @@ from sklearn.metrics import confusion_matrix, f1_score, precision_score, recall_
 from sklearn import svm
 import os
 from utility import load_images
-from PIL import Image
-import numpy as np
+from cnn import CNN
+import tensorflow as tf
+
 
 train_dir = os.path.join(os.path.dirname(__file__), '../data', 'train')
 test_dir = os.path.join(os.path.dirname(__file__), '../data', 'test')
@@ -17,13 +18,34 @@ def load_data():
     return train_X, train_Y, test_X, test_Y
 
 def feature_engineering(train_X):
+    learning_rate = 0.01
+    training_iters = 100000
+    batch_size = 128
+    display_step = 10
+
+    # Network Parameters
+    n_input = 64*64 # MNIST data input (img shape: 28*28)
+    n_classes = 62 # MNIST total classes (0-9 digits)
+    dropout = 0.5 # Dropout, probability to keep units
+
+    is_train = True
+
+    with tf.Session() as sess:
+        cnn = CNN(sess, learning_rate, training_iters, batch_size, display_step, n_input, n_classes, dropout)
+        train_X = cnn.inference(train_X)
+        print train_X
+        print train_X.shape
     return train_X
 
 
 if __name__ == '__main__':
+    print "data is loading..."
     train_X, train_Y, test_X, test_Y = load_data()
-    print "data load complete"
+    print "data is loaded"
+    print "feature engineering..."
     train_X = feature_engineering(train_X)
+    test_X = feature_engineering(test_X)
+    print "feature engineering is complete"
 
     print 'training phase'
     clf = svm.LinearSVC().fit(train_X, train_Y)

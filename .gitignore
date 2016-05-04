@@ -52,3 +52,6 @@ fabric.properties
 data/
 .pyc
 .DS_Store
+.pyc
+*.pyc
+assets
