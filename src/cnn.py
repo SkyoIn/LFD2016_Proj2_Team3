@@ -108,7 +108,7 @@ class CNN(object):
         self.wc1 = tf.Variable(tf.random_normal([3, 3, 1, filter_size[0]])) # 5x5 conv, 1 input, 32 outputs
         self.wc2 = tf.Variable(tf.random_normal([3, 3, filter_size[0], filter_size[1]])) # 5x5 conv, 32 inputs, 64 outputs
         self.wc3 = tf.Variable(tf.random_normal([3,3, filter_size[1], filter_size[2]]))
-        self.wd1 = tf.Variable(tf.random_normal([((self.resize_shape/(2**len(filter_size)))**2)*filter_size[1], fc_size])) # fully connected, 7*7*64 inputs, 1024 outputs
+        self.wd1 = tf.Variable(tf.random_normal([((self.resize_shape/(2**len(filter_size)))**2)*filter_size[2], fc_size])) # fully connected, 7*7*64 inputs, 1024 outputs
         self.out = tf.Variable(tf.random_normal([fc_size, self.n_classes])) # 1024 inputs, 10 outputs (class prediction)
 
 
