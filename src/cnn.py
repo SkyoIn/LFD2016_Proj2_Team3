@@ -77,8 +77,16 @@ class CNN(object):
         # Apply Dropout
         self.conv2 = tf.nn.dropout(self.conv2, self.keep_prob)
 
+        # Convolution Layer
+        self.conv3 = self.conv2d(self.conv2, self.wc3, self.bc3)
+        # Max Pooling (down-sampling)
+        self.conv3 = self.max_pool(self.conv3, k=2)
+        # Apply Dropout
+        self.conv3 = tf.nn.dropout(self.conv3, self.keep_prob)
+
+
         # Fully connected layer
-        self.dense1 = tf.reshape(self.conv2, [-1, self.wd1.get_shape().as_list()[0]]) # Reshape conv2 output to fit dense layer input
+        self.dense1 = tf.reshape(self.conv3, [-1, self.wd1.get_shape().as_list()[0]]) # Reshape conv2 output to fit dense layer input
         self.dense1 = tf.nn.relu(tf.add(tf.matmul(self.dense1, self.wd1), self.bd1)) # Relu activation
         self.dense1 = tf.nn.dropout(self.dense1, self.keep_prob) # Apply Dropout
 
@@ -92,14 +100,16 @@ class CNN(object):
         self.y = tf.placeholder(tf.float32, [None, self.n_classes])
         self.keep_prob = tf.placeholder(tf.float32) #dropout (keep probability)
         # Store layers weight & bias
-        self.wc1 = tf.Variable(tf.random_normal([3, 3, 1, 32])) # 5x5 conv, 1 input, 32 outputs
-        self.wc2 = tf.Variable(tf.random_normal([3, 3, 32, 64])) # 5x5 conv, 32 inputs, 64 outputs
-        self.wd1 = tf.Variable(tf.random_normal([16*16*64, 1024])) # fully connected, 7*7*64 inputs, 1024 outputs
+        self.wc1 = tf.Variable(tf.random_normal([3, 3, 1, 16])) # 5x5 conv, 1 input, 32 outputs
+        self.wc2 = tf.Variable(tf.random_normal([3, 3, 32, 32])) # 5x5 conv, 32 inputs, 64 outputs
+        self.wc3 = tf.Variable(tf.random_normal([3,3, 32, 64]))
+        self.wd1 = tf.Variable(tf.random_normal([8*8*64, 1024])) # fully connected, 7*7*64 inputs, 1024 outputs
         self.out = tf.Variable(tf.random_normal([1024, self.n_classes])) # 1024 inputs, 10 outputs (class prediction)
 
 
-        self.bc1 = tf.Variable(tf.random_normal([32]))
-        self.bc2 = tf.Variable(tf.random_normal([64]))
+        self.bc1 = tf.Variable(tf.random_normal([16]))
+        self.bc2 = tf.Variable(tf.random_normal([32]))
+        self.bc3 = tf.Variable(tf.random_normal([64]))
         self.bd1 = tf.Variable(tf.random_normal([1024]))
         self.bout = tf.Variable(tf.random_normal([self.n_classes]))
 
