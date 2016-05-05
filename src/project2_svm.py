@@ -34,13 +34,10 @@ def main():
     dropout = 0.5 # Dropout, probability to keep units
 
     with tf.Session() as sess:
-        cnn = CNN(sess, learning_rate, training_iters, batch_size, display_step, n_input, n_classes, dropout)
+        cnn = CNN(sess, learning_rate, training_iters, batch_size, display_step, n_input, n_classes, dropout,resize_shape)
         train_X = cnn.inference(train_X)
-        print train_X
-        print train_X.shape
         test_X = cnn.inference(test_X)
-        print test_X
-        print test_X.shape
+
     print "feature engineering is complete"
 
     print 'training phase'
