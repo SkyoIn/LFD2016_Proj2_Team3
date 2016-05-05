@@ -88,7 +88,15 @@ def load_images(base_dir, resize_shape=64, mode="train", one_hot=False):
                 im_elastic5 = elastic_distortion(im, sigma=5)
                 im_elastic6 = elastic_distortion(im, sigma=6)
 
-
+                # Image.fromarray(im).convert('RGB').save('original.png', "PNG")
+                # Image.fromarray(im_elastic0).convert('RGB').save('sigma0.5.png', "PNG")
+                # Image.fromarray(im_elastic1).convert('RGB').save('sigma1.png', "PNG")
+                # Image.fromarray(im_elastic2).convert('RGB').save('sigma2.png', "PNG")
+                # Image.fromarray(im_elastic3).convert('RGB').save('sigma3.png', "PNG")
+                # Image.fromarray(im_elastic4).convert('RGB').save('sigma4.png', "PNG")
+                # Image.fromarray(im_elastic5).convert('RGB').save('sigma5.png', "PNG")
+                # Image.fromarray(im_elastic6).convert('RGB').save('sigma6.png', "PNG")
+                # break
                 # Image.fromarray(im_elastic3).show()
             image.close()
 
@@ -127,11 +135,13 @@ def load_images(base_dir, resize_shape=64, mode="train", one_hot=False):
                 X.append(np.reshape(im_elastic6, shape[0]*shape[1]))
                 Y = np.append(Y, y)
 
-        if mode == "save":
-            with open(os.path.join(os.path.dirname(__file__), '../data', 'train',"X.pkl"), 'wb+') as f:
-                cPickle.dump(X, f)
-            with open(os.path.join(os.path.dirname(__file__), '../data', 'train',"Y.pkl"), 'wb+') as f:
-                cPickle.dump(Y, f)
+
+
+        # if mode == "save":
+        #     with open(os.path.join(os.path.dirname(__file__), '../data', 'train',"X.pkl"), 'wb+') as f:
+        #         cPickle.dump(X, f)
+        #     with open(os.path.join(os.path.dirname(__file__), '../data', 'train',"Y.pkl"), 'wb+') as f:
+        #         cPickle.dump(Y, f)
 
     if one_hot is True:
         Y = Y-1
@@ -141,32 +151,6 @@ def load_images(base_dir, resize_shape=64, mode="train", one_hot=False):
         Y = temp_Y
 
     return np.array(X), Y
-
-
-def display_numbers(X, shape=(64, 64)):
-    import matplotlib.pyplot as plt
-    import matplotlib.cm as cm
-    """Plot digits.
-    Parameters
-    ------
-    X: 2d array
-        Each row contains one number's all pixels in row order.
-    shape: tuple
-        The shape of each digit image.
-    """
-    assert X.ndim == 2
-    assert np.prod(shape) == X.shape[1]
-    n = X.shape[0]
-    row = int(np.sqrt(n)) + 1
-    col = row
-    filling = row*col - n  # blank filling
-    X = np.vstack([X, np.zeros((filling, np.prod(shape)))])
-
-    display_array = np.vstack([np.hstack([
-        X[col*i+j, :].reshape(shape) for j in range(col)
-    ]) for i in range(row)])
-    plt.imshow(display_array, cmap=cm.Greys, vmax=255, vmin=0)
-    plt.show()
 
 if __name__ == "__main__":
     train_dir = os.path.join(os.path.dirname(__file__), '../data', 'train')
