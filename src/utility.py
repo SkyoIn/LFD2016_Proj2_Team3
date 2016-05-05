@@ -133,4 +133,4 @@ def load_images(base_dir, resize_shape=64, mode="train", one_hot=False):
 if __name__ == "__main__":
     train_dir = os.path.join(os.path.dirname(__file__), '../data', 'train')
     test_dir = os.path.join(os.path.dirname(__file__), '../data', 'test')
-    X, Y = load_images(train_dir, mode="train")
+    X, Y = load_images(train_dir, mode="save")
