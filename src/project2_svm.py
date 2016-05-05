@@ -17,7 +17,7 @@ def load_data():
 
     return train_X, train_Y, test_X, test_Y
 
-if __name__ == '__main__':
+def main():
     print "data is loading..."
     train_X, train_Y, test_X, test_Y = load_data()
     print "data is loaded"
@@ -54,3 +54,6 @@ if __name__ == '__main__':
     print precision_score(test_Y, predicts, average=None)
     print recall_score(test_Y, predicts, average=None)
     print accuracy_score(test_Y, predicts)
+
+if __name__ == '__main__':
+    main()

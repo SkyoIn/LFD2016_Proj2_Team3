@@ -98,7 +98,8 @@ class CNN(object):
         return out
 
     def build_graph(self):
-        filter_size =[32, 64, 128]
+        filter_size =[16, 32, 64]
+        fc_size = 2048
 
         # tf Graph input
         self.x = tf.placeholder(tf.float32, [None, self.n_input])
@@ -108,14 +109,14 @@ class CNN(object):
         self.wc1 = tf.Variable(tf.random_normal([3, 3, 1, filter_size[0]])) # 5x5 conv, 1 input, 32 outputs
         self.wc2 = tf.Variable(tf.random_normal([3, 3, filter_size[0], filter_size[1]])) # 5x5 conv, 32 inputs, 64 outputs
         self.wc3 = tf.Variable(tf.random_normal([3,3, filter_size[1], filter_size[2]]))
-        self.wd1 = tf.Variable(tf.random_normal([8*8*filter_size[2], 1024])) # fully connected, 7*7*64 inputs, 1024 outputs
-        self.out = tf.Variable(tf.random_normal([1024, self.n_classes])) # 1024 inputs, 10 outputs (class prediction)
+        self.wd1 = tf.Variable(tf.random_normal([8*8*filter_size[2], fc_size])) # fully connected, 7*7*64 inputs, 1024 outputs
+        self.out = tf.Variable(tf.random_normal([fc_size, self.n_classes])) # 1024 inputs, 10 outputs (class prediction)
 
 
         self.bc1 = tf.Variable(tf.random_normal([filter_size[0]]))
         self.bc2 = tf.Variable(tf.random_normal([filter_size[1]]))
         self.bc3 = tf.Variable(tf.random_normal([filter_size[2]]))
-        self.bd1 = tf.Variable(tf.random_normal([1024]))
+        self.bd1 = tf.Variable(tf.random_normal([fc_size]))
         self.bout = tf.Variable(tf.random_normal([self.n_classes]))
 
         # Construct model
@@ -229,4 +230,5 @@ if __name__ == '__main__':
         #     # plot_with_labels(embeddings, sampling="assigned", method="only_color")
         #     get_similar_items(embeddings)
 
-
+    import project2_svm
+    project2_svm.main()
