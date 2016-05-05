@@ -209,7 +209,7 @@ if __name__ == '__main__':
     n_input = 64*64 # MNIST data input (img shape: 28*28)
     n_classes = 62 # MNIST total classes (0-9 digits)
     dropout = 0.5 # Dropout, probability to keep units
-    resize_shape = 128
+    resize_shape = 64
 
     is_train = True
 

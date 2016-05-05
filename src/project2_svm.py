@@ -18,7 +18,7 @@ def load_data(resize_shape):
     return train_X, train_Y, test_X, test_Y
 
 def main():
-    resize_shape = 128
+    resize_shape = 64
     print "data is loading..."
     train_X, train_Y, test_X, test_Y = load_data(resize_shape)
     print "data is loaded"

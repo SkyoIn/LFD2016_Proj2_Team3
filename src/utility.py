@@ -53,7 +53,7 @@ def elastic_distortion(image, sigma=5, alpha=36):
 
 
 def load_images(base_dir, resize_shape=64, mode="train", one_hot=False):
-    if mode == "traineeee":
+    if mode == "train":
         with open(os.path.join(os.path.dirname(__file__), '../data', 'train',"X.pkl"), 'rb') as f:
             X = cPickle.load(f)
         with open(os.path.join(os.path.dirname(__file__), '../data', 'train',"Y.pkl"), 'rb') as f:
@@ -78,12 +78,17 @@ def load_images(base_dir, resize_shape=64, mode="train", one_hot=False):
             # image class to array
             im = np.array(black_resized_image, dtype=np.int16, copy=True)
 
-            if mode == "save" or "train":
+            if mode == "save":
                  # affine transformation
                 im_elastic0 = elastic_distortion(im, sigma=0.5)
                 im_elastic1 = elastic_distortion(im, sigma=1)
                 im_elastic2 = elastic_distortion(im, sigma=2)
                 im_elastic3 = elastic_distortion(im, sigma=3)
+                im_elastic4 = elastic_distortion(im, sigma=4)
+                im_elastic5 = elastic_distortion(im, sigma=5)
+                im_elastic6 = elastic_distortion(im, sigma=6)
+
+
                 # Image.fromarray(im_elastic3).show()
             image.close()
 
@@ -97,7 +102,7 @@ def load_images(base_dir, resize_shape=64, mode="train", one_hot=False):
             Y = np.append(Y, y)
             X.append(im)
 
-            if mode == "save" or "train":
+            if mode == "save":
                 im_elastic0 = np.reshape(im_elastic0, shape[0]*shape[1])
                 X.append(im_elastic0)
                 Y = np.append(Y, y)
@@ -110,8 +115,16 @@ def load_images(base_dir, resize_shape=64, mode="train", one_hot=False):
                 X.append(im_elastic2)
                 Y = np.append(Y, y)
 
-                im_elastic3 = np.reshape(im_elastic3, shape[0]*shape[1])
-                X.append(im_elastic3)
+                X.append(np.reshape(im_elastic3, shape[0]*shape[1]))
+                Y = np.append(Y, y)
+
+                X.append(np.reshape(im_elastic4, shape[0]*shape[1]))
+                Y = np.append(Y, y)
+
+                X.append(np.reshape(im_elastic5, shape[0]*shape[1]))
+                Y = np.append(Y, y)
+
+                X.append(np.reshape(im_elastic6, shape[0]*shape[1]))
                 Y = np.append(Y, y)
 
         if mode == "save":
