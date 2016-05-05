@@ -78,7 +78,7 @@ def load_images(base_dir, resize_shape=64, mode="train", one_hot=False):
             # image class to array
             im = np.array(black_resized_image, dtype=np.int16, copy=True)
 
-            if mode == "save":
+            if mode == "save" or "train":
                  # affine transformation
                 im_elastic0 = elastic_distortion(im, sigma=0.5)
                 im_elastic1 = elastic_distortion(im, sigma=1)

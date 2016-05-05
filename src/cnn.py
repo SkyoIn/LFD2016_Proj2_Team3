@@ -136,7 +136,7 @@ class CNN(object):
 
         tf.initialize_all_variables().run()
         print "data is loading..."
-        data_loader = DataLoader()
+        data_loader = DataLoader(self.resize_shape)
         valid_xs, valid_ys = data_loader.get_valid_set()
         print "data is loaded"
         step = 1
