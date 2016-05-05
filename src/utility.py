@@ -143,6 +143,31 @@ def load_images(base_dir, resize_shape=64, mode="train", one_hot=False):
     return np.array(X), Y
 
 
+def display_numbers(X, shape=(64, 64)):
+    import matplotlib.pyplot as plt
+    import matplotlib.cm as cm
+    """Plot digits.
+    Parameters
+    ------
+    X: 2d array
+        Each row contains one number's all pixels in row order.
+    shape: tuple
+        The shape of each digit image.
+    """
+    assert X.ndim == 2
+    assert np.prod(shape) == X.shape[1]
+    n = X.shape[0]
+    row = int(np.sqrt(n)) + 1
+    col = row
+    filling = row*col - n  # blank filling
+    X = np.vstack([X, np.zeros((filling, np.prod(shape)))])
+
+    display_array = np.vstack([np.hstack([
+        X[col*i+j, :].reshape(shape) for j in range(col)
+    ]) for i in range(row)])
+    plt.imshow(display_array, cmap=cm.Greys, vmax=255, vmin=0)
+    plt.show()
+
 if __name__ == "__main__":
     train_dir = os.path.join(os.path.dirname(__file__), '../data', 'train')
     test_dir = os.path.join(os.path.dirname(__file__), '../data', 'test')

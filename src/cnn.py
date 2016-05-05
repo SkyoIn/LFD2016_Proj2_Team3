@@ -173,6 +173,25 @@ class CNN(object):
 
         return self.sess.run(self.dense1, feed_dict={self.x: x, self.y: y, self.keep_prob: 1.})
 
+    def calculate_error(self):
+        # Define Saver
+        self.saver = tf.train.Saver()
+
+        if self.load() is True:
+            print(" [*] Load SUCCESS")
+        else:
+            print(" [!] Load failed...")
+
+        # Evaluate model
+        correct_pred = tf.equal(tf.argmax(self.pred,1), tf.argmax(self.y,1))
+        accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
+
+        train_dir = os.path.join(os.path.dirname(__file__), '../data', 'train')
+        xs, ys = load_images(train_dir, mode="train", one_hot=True, resize_shape=resize_shape)
+
+        acc = self.sess.run(accuracy, feed_dict={self.x: xs, self.y: ys, self.keep_prob: 1.})
+        print "accuracy : {:.5f}".format(acc)
+
     def save(self, step):
         """ """
         model_name ='cnn.model'
@@ -201,7 +220,7 @@ if __name__ == '__main__':
     import time
     # Parameters
     learning_rate = 0.001
-    training_iters = 500000
+    training_iters = 1000000
     batch_size = 128
     display_step = 10
 
@@ -211,7 +230,7 @@ if __name__ == '__main__':
     dropout = 0.5 # Dropout, probability to keep units
     resize_shape = 64
 
-    is_train = True
+    is_train = False
 
     with tf.Session() as sess:
         cnn = CNN(sess, learning_rate, training_iters, batch_size, display_step, n_input, n_classes, dropout, resize_shape)
@@ -221,6 +240,8 @@ if __name__ == '__main__':
             cnn.train()
             print("--- %s seconds ---" % (time.time() - start_time))
             print("--- %s min ---" % ((time.time() - start_time)/float(60)))
+        else:
+            cnn.calculate_error()
         # else:
         #     # input_ids = np.asarray([0, 1, 2, 3, 4])
         #     input_ids = None
