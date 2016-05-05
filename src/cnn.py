@@ -6,9 +6,11 @@ import os
 from utility import load_images
 
 class DataLoader(object):
+
     def __init__(self):
-        self.train_dir = os.path.join(os.path.dirname(__file__), '../data', 'train')
-        self.xs, self.ys = load_images(self.train_dir, mode="train")
+        train_dir = os.path.join(os.path.dirname(__file__), '../data', 'train')
+
+        self.xs, self.ys = load_images(train_dir, mode="train", one_hot=True)
         self.xs, self.ys = self.shuffle_data(self.xs, self.ys)
         self.data_idx = 0
 
@@ -26,8 +28,14 @@ class DataLoader(object):
         return batch_x, batch_y
 
     def shuffle_data(self, xs, ys):
+        print "shuffle"
         random_idx = np.random.choice(range(len(xs)), len(xs), replace=False)
         return xs[random_idx, :], ys[random_idx, :]
+
+    def get_valid_set(self):
+        test_dir = os.path.join(os.path.dirname(__file__), '../data', 'test')
+        valid_xs, valid_ys = load_images(test_dir, mode="valid", one_hot=True)
+        return valid_xs, valid_ys
 
 # Create model
 class CNN(object):
@@ -40,6 +48,9 @@ class CNN(object):
         self.n_input = n_input
         self.n_classes = n_classes
         self.dropout = dropout
+        print "graph is building..."
+        self.build_graph()
+        print "graph is built"
 
 
     def conv2d(self, img, w, b):
@@ -53,26 +64,26 @@ class CNN(object):
         # Reshape input picture
         self.x_4d = tf.reshape(self.x, shape=[-1, 64, 64, 1])
         # Convolution Layer
-        self.conv1 = self.conv2d(self.x_4d, self._weights['wc1'], self._biases['bc1'])
+        self.conv1 = self.conv2d(self.x_4d, self.wc1, self.bc1)
         # Max Pooling (down-sampling)
         self.conv1 = self.max_pool(self.conv1, k=2)
         # Apply Dropout
         self.conv1 = tf.nn.dropout(self.conv1, self.keep_prob)
 
         # Convolution Layer
-        self.conv2 = self.conv2d(self.conv1, self._weights['wc2'], self._biases['bc2'])
+        self.conv2 = self.conv2d(self.conv1, self.wc2, self.bc2)
         # Max Pooling (down-sampling)
         self.conv2 = self.max_pool(self.conv2, k=2)
         # Apply Dropout
         self.conv2 = tf.nn.dropout(self.conv2, self.keep_prob)
 
         # Fully connected layer
-        self.dense1 = tf.reshape(self.conv2, [-1, self._weights['wd1'].get_shape().as_list()[0]]) # Reshape conv2 output to fit dense layer input
-        self.dense1 = tf.nn.relu(tf.add(tf.matmul(self.dense1, self._weights['wd1']), self._biases['bd1'])) # Relu activation
+        self.dense1 = tf.reshape(self.conv2, [-1, self.wd1.get_shape().as_list()[0]]) # Reshape conv2 output to fit dense layer input
+        self.dense1 = tf.nn.relu(tf.add(tf.matmul(self.dense1, self.wd1), self.bd1)) # Relu activation
         self.dense1 = tf.nn.dropout(self.dense1, self.keep_prob) # Apply Dropout
 
         # Output, class prediction
-        out = tf.add(tf.matmul(self.dense1, self._weights['out']), self._biases['out'])
+        out = tf.add(tf.matmul(self.dense1, self.out), self.bout)
         return out
 
     def build_graph(self):
@@ -81,19 +92,17 @@ class CNN(object):
         self.y = tf.placeholder(tf.float32, [None, self.n_classes])
         self.keep_prob = tf.placeholder(tf.float32) #dropout (keep probability)
         # Store layers weight & bias
-        self._weights = {
-            'wc1': tf.Variable(tf.random_normal([3, 3, 1, 32])), # 5x5 conv, 1 input, 32 outputs
-            'wc2': tf.Variable(tf.random_normal([3, 3, 32, 64])), # 5x5 conv, 32 inputs, 64 outputs
-            'wd1': tf.Variable(tf.random_normal([16*16*64, 1024])), # fully connected, 7*7*64 inputs, 1024 outputs
-            'out': tf.Variable(tf.random_normal([1024, self.n_classes])) # 1024 inputs, 10 outputs (class prediction)
-        }
+        self.wc1 = tf.Variable(tf.random_normal([3, 3, 1, 32])) # 5x5 conv, 1 input, 32 outputs
+        self.wc2 = tf.Variable(tf.random_normal([3, 3, 32, 64])) # 5x5 conv, 32 inputs, 64 outputs
+        self.wd1 = tf.Variable(tf.random_normal([16*16*64, 1024])) # fully connected, 7*7*64 inputs, 1024 outputs
+        self.out = tf.Variable(tf.random_normal([1024, self.n_classes])) # 1024 inputs, 10 outputs (class prediction)
 
-        self._biases = {
-            'bc1': tf.Variable(tf.random_normal([32])),
-            'bc2': tf.Variable(tf.random_normal([64])),
-            'bd1': tf.Variable(tf.random_normal([1024])),
-            'out': tf.Variable(tf.random_normal([self.n_classes]))
-        }
+
+        self.bc1 = tf.Variable(tf.random_normal([32]))
+        self.bc2 = tf.Variable(tf.random_normal([64]))
+        self.bd1 = tf.Variable(tf.random_normal([1024]))
+        self.bout = tf.Variable(tf.random_normal([self.n_classes]))
+
         # Construct model
         self.pred = self.conv_net()
 
@@ -101,20 +110,19 @@ class CNN(object):
         self.cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(self.pred, self.y))
 
     def train(self):
-        print "graph is building..."
-        self.build_graph()
-        print "graph is built"
+
         self.optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_rate).minimize(self.cost)
 
         # Evaluate model
-        self.correct_pred = tf.equal(tf.argmax(self.pred,1), tf.argmax(self.y,1))
-        self.accuracy = tf.reduce_mean(tf.cast(self.correct_pred, tf.float32))
+        correct_pred = tf.equal(tf.argmax(self.pred,1), tf.argmax(self.y,1))
+        accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
         # Define Saver
         self.saver = tf.train.Saver()
 
         tf.initialize_all_variables().run()
         print "data is loading..."
         data_loader = DataLoader()
+        valid_xs, valid_ys = data_loader.get_valid_set()
         print "data is loaded"
         step = 1
         # Keep training until reach max iterations
@@ -126,7 +134,7 @@ class CNN(object):
             if step % self.display_step == 0:
                 print "step : %d (%f%%)" %(step, float(step * self.batch_size)/self.training_iters,)
                 # Calculate batch accuracy and loss
-                acc, loss = self.sess.run([self.accuracy, self.cost], feed_dict={self.x: batch_xs, self.y: batch_ys, self.keep_prob: 1.})
+                acc, loss = self.sess.run([accuracy, self.cost], feed_dict={self.x: valid_xs, self.y: valid_ys, self.keep_prob: 1.})
                 print "Iter " + str(step*self.batch_size) + ", Minibatch Loss= " + "{:.6f}".format(loss) + ", Training Accuracy= " + "{:.5f}".format(acc)
             step += 1
 
@@ -135,12 +143,11 @@ class CNN(object):
 
         print "Optimization Finished!"
         # Calculate accuracy for 256 mnist test images
-        print "Testing Accuracy:", self.sess.run(self.accuracy, feed_dict={self.x: batch_xs, self.y: batch_ys, self.keep_prob: 1.})
+        print "Testing Accuracy:", self.sess.run(accuracy, feed_dict={self.x: valid_xs, self.y: valid_ys, self.keep_prob: 1.})
 
     def inference(self, x):
         y = np.zeros(shape=[x.shape[0], self.n_classes])
 
-        self.build_graph()
         # Define Saver
         self.saver = tf.train.Saver()
 
@@ -178,7 +185,7 @@ class CNN(object):
 if __name__ == '__main__':
     import time
     # Parameters
-    learning_rate = 0.01
+    learning_rate = 0.005
     training_iters = 100000
     batch_size = 128
     display_step = 10

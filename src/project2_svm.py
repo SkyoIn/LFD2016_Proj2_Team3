@@ -11,13 +11,17 @@ test_dir = os.path.join(os.path.dirname(__file__), '../data', 'test')
 
 
 def load_data():
-    train_X, train_Y = load_images(train_dir, mode="train")
-    test_X, test_Y = load_images(test_dir, mode="test")
+    train_X, train_Y = load_images(train_dir, mode="train", one_hot=False)
+    test_X, test_Y = load_images(test_dir, mode="test", one_hot=False)
     # train_X, train_Y = test_X, test_Y
 
     return train_X, train_Y, test_X, test_Y
 
-def feature_engineering(train_X):
+if __name__ == '__main__':
+    print "data is loading..."
+    train_X, train_Y, test_X, test_Y = load_data()
+    print "data is loaded"
+    print "feature engineering..."
     learning_rate = 0.01
     training_iters = 100000
     batch_size = 128
@@ -28,23 +32,14 @@ def feature_engineering(train_X):
     n_classes = 62 # MNIST total classes (0-9 digits)
     dropout = 0.5 # Dropout, probability to keep units
 
-    is_train = True
-
     with tf.Session() as sess:
         cnn = CNN(sess, learning_rate, training_iters, batch_size, display_step, n_input, n_classes, dropout)
         train_X = cnn.inference(train_X)
         print train_X
         print train_X.shape
-    return train_X
-
-
-if __name__ == '__main__':
-    print "data is loading..."
-    train_X, train_Y, test_X, test_Y = load_data()
-    print "data is loaded"
-    print "feature engineering..."
-    train_X = feature_engineering(train_X)
-    test_X = feature_engineering(test_X)
+        test_X = cnn.inference(test_X)
+        print test_X
+        print test_X.shape
     print "feature engineering is complete"
 
     print 'training phase'

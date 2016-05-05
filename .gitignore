@@ -55,3 +55,5 @@ data/
 .pyc
 *.pyc
 assets
+*.pyc
+src/cnn.pyc src/utility.pyc

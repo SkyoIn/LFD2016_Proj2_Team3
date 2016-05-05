@@ -52,7 +52,7 @@ def elastic_distortion(image, sigma=5, alpha=36):
     return bilinear_interpolate(image, dx, dy)
 
 
-def load_images(base_dir, resize_shape=64, mode="train"):
+def load_images(base_dir, resize_shape=64, mode="train", one_hot=False):
     if mode == "train":
         with open(os.path.join(os.path.dirname(__file__), '../data', 'train',"X.pkl"), 'rb') as f:
             X = cPickle.load(f)
@@ -120,7 +120,7 @@ def load_images(base_dir, resize_shape=64, mode="train"):
             with open(os.path.join(os.path.dirname(__file__), '../data', 'train',"Y.pkl"), 'wb+') as f:
                 cPickle.dump(Y, f)
 
-    if mode == "train":
+    if one_hot is True:
         Y = Y-1
         Y = Y.tolist()
         temp_Y = np.zeros(shape=[len(Y), 62])
