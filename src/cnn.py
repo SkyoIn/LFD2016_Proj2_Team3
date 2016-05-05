@@ -160,8 +160,8 @@ class CNN(object):
         print "Optimization Finished!"
         # Calculate accuracy for 256 mnist test images
         print "validation Accuracy:", self.sess.run(accuracy, feed_dict={self.x: valid_xs, self.y: valid_ys, self.keep_prob: 1.})
-        all_xs, all_ys = data_loader.get_all_data()
-        print "training Accuracy:", self.sess.run(accuracy, feed_dict={self.x: all_xs, self.y: all_ys, self.keep_prob: 1.})
+        # all_xs, all_ys = data_loader.get_all_data()
+        # print "training Accuracy:", self.sess.run(accuracy, feed_dict={self.x: all_xs, self.y: all_ys, self.keep_prob: 1.})
 
     def inference(self, x):
         y = np.zeros(shape=[x.shape[0], self.n_classes])
