@@ -101,7 +101,7 @@ class CNN(object):
         self.keep_prob = tf.placeholder(tf.float32) #dropout (keep probability)
         # Store layers weight & bias
         self.wc1 = tf.Variable(tf.random_normal([3, 3, 1, 16])) # 5x5 conv, 1 input, 32 outputs
-        self.wc2 = tf.Variable(tf.random_normal([3, 3, 32, 32])) # 5x5 conv, 32 inputs, 64 outputs
+        self.wc2 = tf.Variable(tf.random_normal([3, 3, 16, 32])) # 5x5 conv, 32 inputs, 64 outputs
         self.wc3 = tf.Variable(tf.random_normal([3,3, 32, 64]))
         self.wd1 = tf.Variable(tf.random_normal([8*8*64, 1024])) # fully connected, 7*7*64 inputs, 1024 outputs
         self.out = tf.Variable(tf.random_normal([1024, self.n_classes])) # 1024 inputs, 10 outputs (class prediction)
