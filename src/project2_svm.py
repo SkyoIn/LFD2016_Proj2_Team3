@@ -10,16 +10,17 @@ train_dir = os.path.join(os.path.dirname(__file__), '../data', 'train')
 test_dir = os.path.join(os.path.dirname(__file__), '../data', 'test')
 
 
-def load_data():
-    train_X, train_Y = load_images(train_dir, mode="train", one_hot=False)
-    test_X, test_Y = load_images(test_dir, mode="test", one_hot=False)
+def load_data(resize_shape):
+    train_X, train_Y = load_images(train_dir, mode="train", one_hot=False, resize_shape=resize_shape)
+    test_X, test_Y = load_images(test_dir, mode="test", one_hot=False,resize_shape=resize_shape)
     # train_X, train_Y = test_X, test_Y
 
     return train_X, train_Y, test_X, test_Y
 
 def main():
+    resize_shape = 128
     print "data is loading..."
-    train_X, train_Y, test_X, test_Y = load_data()
+    train_X, train_Y, test_X, test_Y = load_data(resize_shape)
     print "data is loaded"
     print "feature engineering..."
     learning_rate = 0.01

@@ -7,10 +7,10 @@ from utility import load_images
 
 class DataLoader(object):
 
-    def __init__(self):
+    def __init__(self, resize_shape):
         train_dir = os.path.join(os.path.dirname(__file__), '../data', 'train')
-
-        self.xs, self.ys = load_images(train_dir, mode="train", one_hot=True)
+        self.resize_shape = resize_shape
+        self.xs, self.ys = load_images(train_dir, mode="train", one_hot=True, resize_shape=resize_shape)
         self.xs, self.ys = self.shuffle_data(self.xs, self.ys)
         self.data_idx = 0
 
@@ -34,7 +34,7 @@ class DataLoader(object):
 
     def get_valid_set(self):
         test_dir = os.path.join(os.path.dirname(__file__), '../data', 'test')
-        valid_xs, valid_ys = load_images(test_dir, mode="valid", one_hot=True)
+        valid_xs, valid_ys = load_images(test_dir, mode="valid", one_hot=True, resize_shape=resize_shape)
         return valid_xs, valid_ys
 
     def get_all_data(self):
@@ -42,7 +42,7 @@ class DataLoader(object):
 
 # Create model
 class CNN(object):
-    def __init__(self, sess, learning_rate, training_iters, batch_size, display_step, n_input, n_classes, dropout):
+    def __init__(self, sess, learning_rate, training_iters, batch_size, display_step, n_input, n_classes, dropout, resize_shape):
         self.sess = sess
         self.learning_rate = learning_rate
         self.training_iters = training_iters
@@ -51,6 +51,7 @@ class CNN(object):
         self.n_input = n_input
         self.n_classes = n_classes
         self.dropout = dropout
+        self.resize_shape = resize_shape
         print "graph is building..."
         self.build_graph()
         print "graph is built"
@@ -65,7 +66,7 @@ class CNN(object):
 
     def conv_net(self):
         # Reshape input picture
-        self.x_4d = tf.reshape(self.x, shape=[-1, 64, 64, 1])
+        self.x_4d = tf.reshape(self.x, shape=[-1, self.resize_shape, self.resize_shape, 1])
         # Convolution Layer
         self.conv1 = self.conv2d(self.x_4d, self.wc1, self.bc1)
         # Max Pooling (down-sampling)
@@ -109,7 +110,7 @@ class CNN(object):
         self.wc1 = tf.Variable(tf.random_normal([3, 3, 1, filter_size[0]])) # 5x5 conv, 1 input, 32 outputs
         self.wc2 = tf.Variable(tf.random_normal([3, 3, filter_size[0], filter_size[1]])) # 5x5 conv, 32 inputs, 64 outputs
         # self.wc3 = tf.Variable(tf.random_normal([3,3, filter_size[1], filter_size[2]]))
-        self.wd1 = tf.Variable(tf.random_normal([8*8*filter_size[1], fc_size])) # fully connected, 7*7*64 inputs, 1024 outputs
+        self.wd1 = tf.Variable(tf.random_normal([((self.resize_shape/(2**len(filter_size)))**2)*filter_size[1], fc_size])) # fully connected, 7*7*64 inputs, 1024 outputs
         self.out = tf.Variable(tf.random_normal([fc_size, self.n_classes])) # 1024 inputs, 10 outputs (class prediction)
 
 
@@ -212,11 +213,12 @@ if __name__ == '__main__':
     n_input = 64*64 # MNIST data input (img shape: 28*28)
     n_classes = 62 # MNIST total classes (0-9 digits)
     dropout = 0.5 # Dropout, probability to keep units
+    resize_shape = 128
 
     is_train = True
 
     with tf.Session() as sess:
-        cnn = CNN(sess, learning_rate, training_iters, batch_size, display_step, n_input, n_classes, dropout)
+        cnn = CNN(sess, learning_rate, training_iters, batch_size, display_step, n_input, n_classes, dropout, resize_shape)
 
         if is_train is True:
             start_time = time.time()
@@ -230,5 +232,3 @@ if __name__ == '__main__':
         #     # plot_with_labels(embeddings, sampling="assigned", method="only_color")
         #     get_similar_items(embeddings)
 
-    import project2_svm
-    project2_svm.main()

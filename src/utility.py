@@ -53,7 +53,7 @@ def elastic_distortion(image, sigma=5, alpha=36):
 
 
 def load_images(base_dir, resize_shape=64, mode="train", one_hot=False):
-    if mode == "train":
+    if mode == "traineeee":
         with open(os.path.join(os.path.dirname(__file__), '../data', 'train',"X.pkl"), 'rb') as f:
             X = cPickle.load(f)
         with open(os.path.join(os.path.dirname(__file__), '../data', 'train',"Y.pkl"), 'rb') as f:
@@ -97,7 +97,7 @@ def load_images(base_dir, resize_shape=64, mode="train", one_hot=False):
             Y = np.append(Y, y)
             X.append(im)
 
-            if mode == "save":
+            if mode == "save" or "train":
                 im_elastic0 = np.reshape(im_elastic0, shape[0]*shape[1])
                 X.append(im_elastic0)
                 Y = np.append(Y, y)
