@@ -37,6 +37,9 @@ class DataLoader(object):
         valid_xs, valid_ys = load_images(test_dir, mode="valid", one_hot=True)
         return valid_xs, valid_ys
 
+    def get_all_data(self):
+        return self.xs, self.ys
+
 # Create model
 class CNN(object):
     def __init__(self, sess, learning_rate, training_iters, batch_size, display_step, n_input, n_classes, dropout):
@@ -95,21 +98,23 @@ class CNN(object):
         return out
 
     def build_graph(self):
+        filter_size =[32, 64, 128]
+
         # tf Graph input
         self.x = tf.placeholder(tf.float32, [None, self.n_input])
         self.y = tf.placeholder(tf.float32, [None, self.n_classes])
         self.keep_prob = tf.placeholder(tf.float32) #dropout (keep probability)
         # Store layers weight & bias
-        self.wc1 = tf.Variable(tf.random_normal([3, 3, 1, 16])) # 5x5 conv, 1 input, 32 outputs
-        self.wc2 = tf.Variable(tf.random_normal([3, 3, 16, 32])) # 5x5 conv, 32 inputs, 64 outputs
-        self.wc3 = tf.Variable(tf.random_normal([3,3, 32, 64]))
-        self.wd1 = tf.Variable(tf.random_normal([8*8*64, 1024])) # fully connected, 7*7*64 inputs, 1024 outputs
+        self.wc1 = tf.Variable(tf.random_normal([3, 3, 1, filter_size[0]])) # 5x5 conv, 1 input, 32 outputs
+        self.wc2 = tf.Variable(tf.random_normal([3, 3, filter_size[0], filter_size[1]])) # 5x5 conv, 32 inputs, 64 outputs
+        self.wc3 = tf.Variable(tf.random_normal([3,3, filter_size[1], filter_size[2]]))
+        self.wd1 = tf.Variable(tf.random_normal([8*8*filter_size[2], 1024])) # fully connected, 7*7*64 inputs, 1024 outputs
         self.out = tf.Variable(tf.random_normal([1024, self.n_classes])) # 1024 inputs, 10 outputs (class prediction)
 
 
-        self.bc1 = tf.Variable(tf.random_normal([16]))
-        self.bc2 = tf.Variable(tf.random_normal([32]))
-        self.bc3 = tf.Variable(tf.random_normal([64]))
+        self.bc1 = tf.Variable(tf.random_normal([filter_size[0]]))
+        self.bc2 = tf.Variable(tf.random_normal([filter_size[1]]))
+        self.bc3 = tf.Variable(tf.random_normal([filter_size[2]]))
         self.bd1 = tf.Variable(tf.random_normal([1024]))
         self.bout = tf.Variable(tf.random_normal([self.n_classes]))
 
@@ -142,10 +147,10 @@ class CNN(object):
             # Fit training using batch data
             self.sess.run(self.optimizer, feed_dict={self.x: batch_xs, self.y: batch_ys, self.keep_prob: self.dropout})
             if step % self.display_step == 0:
-                print "step : %d (%f%%)" %(step, float(step * self.batch_size)/self.training_iters,)
+                print "step : %d (%f%%)" %(step, float(step * self.batch_size)*100/self.training_iters,)
                 # Calculate batch accuracy and loss
                 acc, loss = self.sess.run([accuracy, self.cost], feed_dict={self.x: valid_xs, self.y: valid_ys, self.keep_prob: 1.})
-                print "Iter " + str(step*self.batch_size) + ", Minibatch Loss= " + "{:.6f}".format(loss) + ", Training Accuracy= " + "{:.5f}".format(acc)
+                print "Iter " + str(step*self.batch_size) + ", Minibatch Loss= " + "{:.6f}".format(loss) + ", validation Accuracy= " + "{:.5f}".format(acc)
             step += 1
 
             if step % 10 == 0:
@@ -153,7 +158,9 @@ class CNN(object):
 
         print "Optimization Finished!"
         # Calculate accuracy for 256 mnist test images
-        print "Testing Accuracy:", self.sess.run(accuracy, feed_dict={self.x: valid_xs, self.y: valid_ys, self.keep_prob: 1.})
+        print "validation Accuracy:", self.sess.run(accuracy, feed_dict={self.x: valid_xs, self.y: valid_ys, self.keep_prob: 1.})
+        all_xs, all_ys = data_loader.get_all_data()
+        print "training Accuracy:", self.sess.run(accuracy, feed_dict={self.x: all_xs, self.y: all_ys, self.keep_prob: 1.})
 
     def inference(self, x):
         y = np.zeros(shape=[x.shape[0], self.n_classes])
@@ -196,7 +203,7 @@ if __name__ == '__main__':
     import time
     # Parameters
     learning_rate = 0.001
-    training_iters = 1000000
+    training_iters = 500000
     batch_size = 128
     display_step = 10
 
