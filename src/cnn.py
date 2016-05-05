@@ -68,27 +68,27 @@ class CNN(object):
         # Max Pooling (down-sampling)
         self.conv1 = self.max_pool(self.conv1, k=2)
         # Apply Dropout
-        self.conv1 = tf.nn.dropout(self.conv1, self.keep_prob)
+        # self.conv1 = tf.nn.dropout(self.conv1, self.keep_prob)
 
         # Convolution Layer
         self.conv2 = self.conv2d(self.conv1, self.wc2, self.bc2)
         # Max Pooling (down-sampling)
         self.conv2 = self.max_pool(self.conv2, k=2)
         # Apply Dropout
-        self.conv2 = tf.nn.dropout(self.conv2, self.keep_prob)
+        # self.conv2 = tf.nn.dropout(self.conv2, self.keep_prob)
 
         # Convolution Layer
         self.conv3 = self.conv2d(self.conv2, self.wc3, self.bc3)
         # Max Pooling (down-sampling)
         self.conv3 = self.max_pool(self.conv3, k=2)
         # Apply Dropout
-        self.conv3 = tf.nn.dropout(self.conv3, self.keep_prob)
+        # self.conv3 = tf.nn.dropout(self.conv3, self.keep_prob)
 
 
         # Fully connected layer
         self.dense1 = tf.reshape(self.conv3, [-1, self.wd1.get_shape().as_list()[0]]) # Reshape conv2 output to fit dense layer input
         self.dense1 = tf.nn.relu(tf.add(tf.matmul(self.dense1, self.wd1), self.bd1)) # Relu activation
-        self.dense1 = tf.nn.dropout(self.dense1, self.keep_prob) # Apply Dropout
+        # self.dense1 = tf.nn.dropout(self.dense1, self.keep_prob) # Apply Dropout
 
         # Output, class prediction
         out = tf.add(tf.matmul(self.dense1, self.out), self.bout)
@@ -196,7 +196,7 @@ if __name__ == '__main__':
     import time
     # Parameters
     learning_rate = 0.001
-    training_iters = 100000
+    training_iters = 1000000
     batch_size = 128
     display_step = 10
 
