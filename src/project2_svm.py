@@ -29,7 +29,7 @@ def main():
     display_step = 10
 
     # Network Parameters
-    n_input = 64*64 # MNIST data input (img shape: 28*28)
+    n_input = resize_shape*resize_shape # MNIST data input (img shape: 28*28)
     n_classes = 62 # MNIST total classes (0-9 digits)
     dropout = 0.5 # Dropout, probability to keep units
 
