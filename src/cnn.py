@@ -37,8 +37,6 @@ class DataLoader(object):
         valid_xs, valid_ys = load_images(test_dir, mode="valid", one_hot=True, resize_shape=resize_shape)
         return valid_xs, valid_ys
 
-    def get_all_data(self):
-        return self.xs, self.ys
 
 # Create model
 class CNN(object):
@@ -161,8 +159,6 @@ class CNN(object):
         print "Optimization Finished!"
         # Calculate accuracy for 256 mnist test images
         print "validation Accuracy:", self.sess.run(accuracy, feed_dict={self.x: valid_xs, self.y: valid_ys, self.keep_prob: 1.})
-        # all_xs, all_ys = data_loader.get_all_data()
-        # print "training Accuracy:", self.sess.run(accuracy, feed_dict={self.x: all_xs, self.y: all_ys, self.keep_prob: 1.})
 
     def inference(self, x):
         y = np.zeros(shape=[x.shape[0], self.n_classes])
