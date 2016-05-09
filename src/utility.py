@@ -53,7 +53,7 @@ def elastic_distortion(image, sigma=5, alpha=36):
 
 
 def load_images(base_dir, resize_shape=64, mode="train", one_hot=False):
-    if mode == "train":
+    if mode == "save_and_train":
         with open(os.path.join(os.path.dirname(__file__), '../data', 'train',"X.pkl"), 'rb') as f:
             X = cPickle.load(f)
         with open(os.path.join(os.path.dirname(__file__), '../data', 'train',"Y.pkl"), 'rb') as f:
@@ -78,7 +78,7 @@ def load_images(base_dir, resize_shape=64, mode="train", one_hot=False):
             # image class to array
             im = np.array(black_resized_image, dtype=np.int16, copy=True)
 
-            if mode == "save":
+            if mode == "save" or mode == "train":
                  # affine transformation
                 im_elastic0 = elastic_distortion(im, sigma=0.5)
                 im_elastic1 = elastic_distortion(im, sigma=1)
@@ -110,7 +110,7 @@ def load_images(base_dir, resize_shape=64, mode="train", one_hot=False):
             Y = np.append(Y, y)
             X.append(im)
 
-            if mode == "save":
+            if mode == "save" or mode == "train":
                 im_elastic0 = np.reshape(im_elastic0, shape[0]*shape[1])
                 X.append(im_elastic0)
                 Y = np.append(Y, y)
@@ -149,11 +149,8 @@ def load_images(base_dir, resize_shape=64, mode="train", one_hot=False):
         temp_Y = np.zeros(shape=[len(Y), 62])
         temp_Y[list(range(len(Y))), Y] = 1
         Y = temp_Y
-    
 
-    X_nd = np.array(X)
-    X_nd = X_nd/float(255)
-    return X_nd, Y
+    return np.array(X), Y
 
 if __name__ == "__main__":
     train_dir = os.path.join(os.path.dirname(__file__), '../data', 'train')

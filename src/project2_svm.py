@@ -54,18 +54,18 @@ def main():
     print accuracy_score(test_Y, predicts)
 
 
-    print 'training phase'
-    clf = svm.LinearSVC().fit(train_X, train_Y)
-    print 'test phase'
-    predicts = clf.predict(train_X)
-
-    # measure function
-    print 'measure phase'
-    print confusion_matrix(train_Y, predicts)
-    print f1_score(train_Y, predicts, average=None)
-    print precision_score(train_Y, predicts, average=None)
-    print recall_score(train_Y, predicts, average=None)
-    print accuracy_score(train_Y, predicts)
+    # print 'training phase'
+    # clf = svm.LinearSVC().fit(train_X, train_Y)
+    # print 'test phase'
+    # predicts = clf.predict(train_X)
+    #
+    # # measure function
+    # print 'measure phase'
+    # print confusion_matrix(train_Y, predicts)
+    # print f1_score(train_Y, predicts, average=None)
+    # print precision_score(train_Y, predicts, average=None)
+    # print recall_score(train_Y, predicts, average=None)
+    # print accuracy_score(train_Y, predicts)
 
 if __name__ == '__main__':
     main()
