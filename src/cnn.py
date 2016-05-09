@@ -230,7 +230,7 @@ if __name__ == '__main__':
     dropout = 0.5 # Dropout, probability to keep units
     resize_shape = 64
 
-    is_train = False
+    is_train = True 
 
     with tf.Session() as sess:
         cnn = CNN(sess, learning_rate, training_iters, batch_size, display_step, n_input, n_classes, dropout, resize_shape)

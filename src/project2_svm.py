@@ -41,7 +41,7 @@ def main():
     print "feature engineering is complete"
 
     print 'training phase'
-    clf = svm.SVC().fit(train_X, train_Y)
+    clf = svm.LinearSVC().fit(train_X, train_Y)
     print 'test phase'
     predicts = clf.predict(test_X)
 
