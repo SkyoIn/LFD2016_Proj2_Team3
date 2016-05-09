@@ -80,15 +80,15 @@ class CNN(object):
         # self.conv2 = tf.nn.dropout(self.conv2, self.keep_prob)
 
         # Convolution Layer
-        self.conv3 = self.conv2d(self.conv2, self.wc3, self.bc3)
+#        self.conv3 = self.conv2d(self.conv2, self.wc3, self.bc3)
         # Max Pooling (down-sampling)
-        self.conv3 = self.max_pool(self.conv3, k=2)
+#        self.conv3 = self.max_pool(self.conv3, k=2)
         # Apply Dropout
         # self.conv3 = tf.nn.dropout(self.conv3, self.keep_prob)
 
 
         # Fully connected layer
-        self.dense1 = tf.reshape(self.conv3, [-1, self.wd1.get_shape().as_list()[0]]) # Reshape conv2 output to fit dense layer input
+        self.dense1 = tf.reshape(self.conv2, [-1, self.wd1.get_shape().as_list()[0]]) # Reshape conv2 output to fit dense layer input
         self.dense1 = tf.nn.relu(tf.add(tf.matmul(self.dense1, self.wd1), self.bd1)) # Relu activation
         # self.dense1 = tf.nn.dropout(self.dense1, self.keep_prob) # Apply Dropout
 
@@ -97,7 +97,7 @@ class CNN(object):
         return out
 
     def build_graph(self):
-        filter_size =[16, 32, 64]
+        filter_size =[32, 64]
         fc_size = 1024
 
         # tf Graph input
@@ -105,16 +105,16 @@ class CNN(object):
         self.y = tf.placeholder(tf.float32, [None, self.n_classes])
         self.keep_prob = tf.placeholder(tf.float32) #dropout (keep probability)
         # Store layers weight & bias
-        self.wc1 = tf.Variable(tf.random_normal([3, 3, 1, filter_size[0]])) # 5x5 conv, 1 input, 32 outputs
-        self.wc2 = tf.Variable(tf.random_normal([3, 3, filter_size[0], filter_size[1]])) # 5x5 conv, 32 inputs, 64 outputs
-        self.wc3 = tf.Variable(tf.random_normal([3,3, filter_size[1], filter_size[2]]))
-        self.wd1 = tf.Variable(tf.random_normal([((self.resize_shape/(2**len(filter_size)))**2)*filter_size[2], fc_size])) # fully connected, 7*7*64 inputs, 1024 outputs
+        self.wc1 = tf.Variable(tf.random_normal([5, 5, 1, filter_size[0]])) # 5x5 conv, 1 input, 32 outputs
+        self.wc2 = tf.Variable(tf.random_normal([5, 5, filter_size[0], filter_size[1]])) # 5x5 conv, 32 inputs, 64 outputs
+#        self.wc3 = tf.Variable(tf.random_normal([3,3, filter_size[1], filter_size[2]]))
+        self.wd1 = tf.Variable(tf.random_normal([((self.resize_shape/(2**len(filter_size)))**2)*filter_size[-1], fc_size])) # fully connected, 7*7*64 inputs, 1024 outputs
         self.out = tf.Variable(tf.random_normal([fc_size, self.n_classes])) # 1024 inputs, 10 outputs (class prediction)
 
 
         self.bc1 = tf.Variable(tf.random_normal([filter_size[0]]))
         self.bc2 = tf.Variable(tf.random_normal([filter_size[1]]))
-        self.bc3 = tf.Variable(tf.random_normal([filter_size[2]]))
+#        self.bc3 = tf.Variable(tf.random_normal([filter_size[2]]))
         self.bd1 = tf.Variable(tf.random_normal([fc_size]))
         self.bout = tf.Variable(tf.random_normal([self.n_classes]))
 
@@ -122,7 +122,7 @@ class CNN(object):
         self.pred = self.conv_net()
 
         # Define loss and optimizer
-        self.cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(self.pred, self.y))
+        self.cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(self.pred, self.y)) + 5*tf.global_norm([self.wc1,self.wc2, self.wd1])
 
     def train(self):
 
