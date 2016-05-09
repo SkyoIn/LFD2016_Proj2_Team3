@@ -150,10 +150,7 @@ def load_images(base_dir, resize_shape=64, mode="train", one_hot=False):
         temp_Y[list(range(len(Y))), Y] = 1
         Y = temp_Y
     
-
-    X_nd = np.array(X)
-    X_nd = X_nd/float(255)
-    return X_nd, Y
+    return np.array(X), Y
 
 if __name__ == "__main__":
     train_dir = os.path.join(os.path.dirname(__file__), '../data', 'train')
