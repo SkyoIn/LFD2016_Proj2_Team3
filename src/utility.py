@@ -139,8 +139,11 @@ def load_images(base_dir, resize_shape=64, mode="train", one_hot=False):
         temp_Y = np.zeros(shape=[len(Y), 62])
         temp_Y[list(range(len(Y))), Y] = 1
         Y = temp_Y
+    
 
-    return np.array(X), Y
+    X_nd = np.array(X)
+    X_nd = X_nd/float(255)
+    return X_nd, Y
 
 
 if __name__ == "__main__":
