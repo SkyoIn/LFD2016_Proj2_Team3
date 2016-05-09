@@ -88,7 +88,15 @@ def load_images(base_dir, resize_shape=64, mode="train", one_hot=False):
                 im_elastic5 = elastic_distortion(im, sigma=5)
                 im_elastic6 = elastic_distortion(im, sigma=6)
 
-
+                # Image.fromarray(im).convert('RGB').save('original.png', "PNG")
+                # Image.fromarray(im_elastic0).convert('RGB').save('sigma0.5.png', "PNG")
+                # Image.fromarray(im_elastic1).convert('RGB').save('sigma1.png', "PNG")
+                # Image.fromarray(im_elastic2).convert('RGB').save('sigma2.png', "PNG")
+                # Image.fromarray(im_elastic3).convert('RGB').save('sigma3.png', "PNG")
+                # Image.fromarray(im_elastic4).convert('RGB').save('sigma4.png', "PNG")
+                # Image.fromarray(im_elastic5).convert('RGB').save('sigma5.png', "PNG")
+                # Image.fromarray(im_elastic6).convert('RGB').save('sigma6.png', "PNG")
+                # break
                 # Image.fromarray(im_elastic3).show()
             image.close()
 
@@ -127,11 +135,13 @@ def load_images(base_dir, resize_shape=64, mode="train", one_hot=False):
                 X.append(np.reshape(im_elastic6, shape[0]*shape[1]))
                 Y = np.append(Y, y)
 
-        if mode == "save":
-            with open(os.path.join(os.path.dirname(__file__), '../data', 'train',"X.pkl"), 'wb+') as f:
-                cPickle.dump(X, f)
-            with open(os.path.join(os.path.dirname(__file__), '../data', 'train',"Y.pkl"), 'wb+') as f:
-                cPickle.dump(Y, f)
+
+
+        # if mode == "save":
+        #     with open(os.path.join(os.path.dirname(__file__), '../data', 'train',"X.pkl"), 'wb+') as f:
+        #         cPickle.dump(X, f)
+        #     with open(os.path.join(os.path.dirname(__file__), '../data', 'train',"Y.pkl"), 'wb+') as f:
+        #         cPickle.dump(Y, f)
 
     if one_hot is True:
         Y = Y-1
@@ -144,7 +154,6 @@ def load_images(base_dir, resize_shape=64, mode="train", one_hot=False):
     X_nd = np.array(X)
     X_nd = X_nd/float(255)
     return X_nd, Y
-
 
 if __name__ == "__main__":
     train_dir = os.path.join(os.path.dirname(__file__), '../data', 'train')
